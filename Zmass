@@ -34,8 +34,8 @@ for entry in tree:
     mum_px =mum_PT*r.cos(mum_PHI)
     mum_py =mum_PT*r.sin(mum_PHI)
 
-    mup_E = r.sqrt(mup_p*mup_p + mass_muon*mass_muon)/100
-    mum_E = r.sqrt(mum_p*mum_p + mass_muon*mass_muon)/100
+    mup_E = r.sqrt(mup_p*mup_p + mass_muon*mass_muon)/1000
+    mum_E = r.sqrt(mum_p*mum_p + mass_muon*mass_muon)/1000
 
     E = mup_E
     px = mup_px + mum_px
