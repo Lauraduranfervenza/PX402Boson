@@ -26,7 +26,7 @@ for mass_name , mass_hypothesis in masses.items():
     if mass_name != 'data':
         tree.Draw(f'mu_PT*1.e-3>>{mass_name}',f'TMath::BreitWigner(mu_MC_BOSON_M,{mass_hypo_mev},{w_boson_width_mev})/TMath::BreitWigner(mu_MC_BOSON_M,80385.,{w_boson_width_mev})*(Entry$%2==0)','goff')
     else:
-        tree.Draw(f'mu_PT*1.e-3>>{mass_name}',f'TMath::BreitWigner(mu_MC_BOSON_M,{mass_hypo_mev},{w_boson_width_mev})/TMath::BreitWigner(mu_MC_BOSON_M,80385.,{w_boson_width_mev})*(Entry$%2!=0)','goff')
+        tree.Draw(f'mu_PT*1.e-3>>{mass_name}',f'(Entry$%2!=0)','goff')
 
 c = r.TCanvas('muPT distribution')
 for i, mass_name in enumerate(list(masses.keys())):
@@ -37,7 +37,29 @@ for i, mass_name in enumerate(list(masses.keys())):
         hist.SetLineColor(color[mass_name])
 c.Print('muPT.png')
 
-#text files for templates and data
-with open('original.txt', 'w') as datafile:
-    for j in range(len(original_PT)):
-        datafile.write("%s\n" % original_PT[j])
+#Placeholder to continue coding while I cannot access the results from tree.Draw
+data = []
+templates = []
+for i, entry in enumerate(tree):
+    PT = entry.mu_PT*1.e-3
+    if i%2==0:
+        data.append(PT)
+    else:
+        data.append(PT*0.8)
+
+#function to get chi squared        
+def chi_squared(data, template):
+    for i in range(len(data)):
+       chi_sqr_sum = (data[i]-template[i])/data[i]
+       chi_sqr = chi_sqr + chi_sqr_sum
+    return chi_sqr
+
+#an idea on how this would go
+for mass_name , mass_hypothesis in masses.items():
+    mass_hypo_mev = mass_hypothesis * 1e3
+    chi[names] = chi_squared(data, templates[mass_name])
+
+#with open('chisquared.txt', 'w') as datafile:
+  #  for j in range(len(chi_sqr)):
+   #     datafile.write("%s\n" % chi_sqr[j])
+
