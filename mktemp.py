@@ -5,8 +5,17 @@ gROOT.SetBatch(True)
 
 import ROOT as r
 import math as m
+import matplotlib.pyplot as plt
 
 ifile = r.TFile(data_path)
+  
+def chi_squared(data, template):
+    chi_sqr = 0
+    for i in range(len(data)):
+        error = template[i] + 1 #to avoid 0, provisional
+        chi_sqr_sum = (data[i]-template[i])*(data[i]-template[i])/error
+        chi_sqr = chi_sqr + chi_sqr_sum
+    return chi_sqr
 
 hist_template = r.TH1F('hist_template','mu_PT',100,0.0,100.0)
 
@@ -14,7 +23,7 @@ masses = {'original': 81.0,'less': 80.0, 'more': 82.0, 'data':81.0}
 color = {'original': r.kBlue, 'less' : r.kGreen, 'more': r.kRed, 'data' : r.kBlack}
 
 hists = {}
-original_PT = []
+
 for name, mass in masses.items():
     hists[name] = hist_template.Clone(name)
 
@@ -37,29 +46,37 @@ for i, mass_name in enumerate(list(masses.keys())):
         hist.SetLineColor(color[mass_name])
 c.Print('muPT.png')
 
-#Placeholder to continue coding while I cannot access the results from tree.Draw
 data = []
-templates = []
-for i, entry in enumerate(tree):
-    PT = entry.mu_PT*1.e-3
-    if i%2==0:
-        data.append(PT)
+templates = {}
+chi = []
+Wmass = []
+
+for i, mass_name in enumerate(list(masses.keys())):
+    hist = hists[mass_name]
+    if mass_name == 'data':
+        data = [hist.GetBinContent(j+1) for j in range(100)]
     else:
-        data.append(PT*0.8)
+        templates[mass_name] = [hist.GetBinContent(j+1) for j in range(100)]
 
-#function to get chi squared        
-def chi_squared(data, template):
-    for i in range(len(data)):
-       chi_sqr_sum = (data[i]-template[i])/data[i]
-       chi_sqr = chi_sqr + chi_sqr_sum
-    return chi_sqr
-
-#an idea on how this would go
+#works only in python3 as libraries are ordered
 for mass_name , mass_hypothesis in masses.items():
-    mass_hypo_mev = mass_hypothesis * 1e3
-    chi[names] = chi_squared(data, templates[mass_name])
+    mass_hypo_mev = mass_hypothesis*1.e3
+    if mass_name != 'data':
+        template = templates[mass_name]
+        chi_result = chi_squared(data, template)
+        chi.append(chi_result)
+        Wmass.append(mass_hypo_mev)
+plt.scatter(Wmass, chi)
+plt.ylabel('chi squared')
+plt.xlabel('Mw')
+plt.savefig('chi_plot.png', dpi=300)
 
-#with open('chisquared.txt', 'w') as datafile:
-  #  for j in range(len(chi_sqr)):
-   #     datafile.write("%s\n" % chi_sqr[j])
+
+
+
+
+
+# with open('chisquared.txt', 'w') as datafile:
+#    for j in range(len(templates)):
+#        datafile.write("%s\n" % template[j])
 
