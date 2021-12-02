@@ -12,9 +12,9 @@ ifile = r.TFile(data_path)
 def chi_squared(data, template):
     chi_sqr = 0
     for i in range(len(data)):
-        error = template[i] + 1 #to avoid 0, provisional
-        chi_sqr_sum = (data[i]-template[i])*(data[i]-template[i])/error
-        chi_sqr = chi_sqr + chi_sqr_sum
+        if data >=0:
+            chi_sqr_sum = (data[i]-template[i])*(data[i]-template[i])/data[i]
+            chi_sqr = chi_sqr + chi_sqr_sum
     return chi_sqr
 
 hist_template = r.TH1F('hist_template','mu_PT',100,0.0,100.0)
@@ -58,7 +58,6 @@ for i, mass_name in enumerate(list(masses.keys())):
     else:
         templates[mass_name] = [hist.GetBinContent(j+1) for j in range(100)]
 
-#works only in python3 as libraries are ordered
 for mass_name , mass_hypothesis in masses.items():
     mass_hypo_mev = mass_hypothesis*1.e3
     if mass_name != 'data':
@@ -66,13 +65,18 @@ for mass_name , mass_hypothesis in masses.items():
         chi_result = chi_squared(data, template)
         chi.append(chi_result)
         Wmass.append(mass_hypo_mev)
-plt.scatter(Wmass, chi)
-plt.ylabel('chi squared')
-plt.xlabel('Mw')
-plt.savefig('chi_plot.png', dpi=300)
 
+p = 3
+graph = r.TGraph(p, Wmass, chi, nullptr)
 
+mycanvas = r.TCanvas()
+graph.DrawClone("chi")
+mycanvas.Print("chi_graph.png")
 
+# plt.scatter(Wmass, chi)
+# plt.ylabel('chi squared')
+# plt.xlabel('Mw')
+# plt.savefig('chi_plot.png', dpi=300)
 
 
 
