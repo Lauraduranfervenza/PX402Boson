@@ -1,4 +1,4 @@
-data_path = "/storage/epp2/phshgg/Public/MPhysProject_2021_2022/13TeV__W__Pythia__8.186__CT09MCS__0__LHCbDefaultSim09__evts100000__seed0.root"
+data_path = "/storage/epp2/phshgg/Public/DVTuples__v24e/13TeV_2016_28r1_Down_W_Sim09h.root"
 
 #imports
 from ROOT import gROOT
@@ -9,39 +9,30 @@ import math as m
 import matplotlib.pyplot as plt
 import numpy as np
 
-# - The true boson mass is prop_M   D
-# - The muon pT variable is mu_PT   
-# Now to test the sensitivity to QED, you need to change your script so that either the 
-# pseudodata or the templates (but not both) use the mu_born_PT instead.
-# That will be the muon pT *before* QED final state radiation.
+ifile = r.TFile(data_path)
+tree = ifile.Get('WpIso/DecayTree')
 
-#tree of simulation variables
-ch = r.TChain('MCDecayTree')
-ch.Add(data_path)
 
-#create masses to 
-masses = {'less': 80.0, 'original': 81.0, 'more': 82.0, 'data':81.0}
-color = {'less' : r.kGreen, 'original': r.kBlue, 'more': r.kRed, 'data' : r.kBlack}
+masses = {'less': 79.0, 'original': 81.0, 'more': 82.0, 'data':81.0}
+color = {'less' : r.kGreen, 'original': r.kBlue,  'more': r.kRed, 'data' : r.kBlack}
 #masses = np.linspace(80.,82.,5)
 trial_mass = 81
 
 #create empty histograms
 N_bin = 100
-hist_template = r.TH1F('hist_template','mu_PT',N_bin,30.0,50.0)
-
+hist_template = r.TH1F('hist_template','mu_PT',N_bin,0.0,100.0)
 hists = {}
 for name, mass in masses.items():
     hists[name] = hist_template.Clone(name)
 
-w_boson_width_gev = 2.1
+w_boson_width_mev = 2.1*1.e3
 for mass_name , mass_hypothesis in masses.items():
-    #entry_split = f'(Entry$%2{"!=" if mass_name == "data" else "=="}0)'
-
-    if mass_name != 'data':
-        ch.Draw(f'mu_PT>>{mass_name}',f'TMath::BreitWigner(prop_M,{mass_hypothesis},{w_boson_width_gev})/TMath::BreitWigner(prop_M,80385.,{w_boson_width_gev})*(Entry$%2==0)','goff')
-
-    else:
-        ch.Draw(f'born_mu_PT>>{mass_name}',f'(Entry$%2!=0)','goff')
+    mass_hypo_mev = mass_hypothesis*1.e3
+    entry_split = f'(Entry$%2{"!=" if mass_name == "data" else "=="}0)'# if mass_name == 'data' else
+    #if mass_name != 'data':
+    tree.Draw(f'mu_PT*1.e-3>>{mass_name}',f'TMath::BreitWigner(mu_MC_BOSON_M,{mass_hypo_mev},{w_boson_width_mev})/TMath::BreitWigner(mu_MC_BOSON_M,80385.,{w_boson_width_mev})*{entry_split}','goff')
+    #else:
+    #tree.Draw(f'mu_PT*1.e-3>>{mass_name}',f'(Entry$%2!=0)','goff')
 
 for k in [x for x in masses.keys() if not x == 'data']:
     hists[k].Scale(hists['data'].Integral()/hists[k].Integral())
@@ -79,7 +70,7 @@ def chi_squared(data, template):
 
 
 for mass_name , mass_hypothesis in masses.items():
-    mass_hypo_mev = mass_hypothesis
+    mass_hypo_mev = mass_hypothesis*1.e3
     if mass_name != 'data':
         template = templates[mass_name]
         chi_result = chi_squared(data, template)
@@ -109,4 +100,3 @@ print(f'min chi2/ndf =  {min(chi)}/{len(hists["data"])-2}')
 # with open('chisquared.txt', 'w') as datafile:
 #    for j in range(len(templates)):
 #        datafile.write("%s\n" % template[j])
-

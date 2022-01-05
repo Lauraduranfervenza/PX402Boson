@@ -1,5 +1,5 @@
 data_path = "/storage/epp2/phshgg/Public/MPhysProject_2021_2022/13TeV__2018__magnet_down_data__Z_candidates.root"
-print(data_path)
+#print(data_path)
 
 import ROOT as r
 import numpy as m
@@ -14,7 +14,7 @@ tree = input_file.Get('DecayTree')
 mass_muon=105.65 #in MeV
 array = []
 
-tree.Show(0)
+#tree.Show(0)
 
 for entry in tree:
     mup_PT = entry.mup_PT
@@ -50,7 +50,8 @@ for entry in tree:
     hist.Fill(mass)
     array.append(mass)
 with open('mass_test.txt', 'w') as f:
-    print(array, file=f)
+    for i in range(len(array)):
+        f.write("%s\n" % array[i])
 c = r.TCanvas('Zmass')
 hist.Draw()
 c.Print('zmass.png')

@@ -64,7 +64,7 @@ c.Update()
 hist_PT.Draw()
 hist_PT2.SetLineColor(r.kRed)
 hist_PT2.Draw("SAME")
-c.Print('muPT.png')
+c.Print('pngexample.png')
 
 
 
