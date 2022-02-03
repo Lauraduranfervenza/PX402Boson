@@ -12,9 +12,10 @@ tree = ifile.Get('WpIso/DecayTree')
 
 #create empty histograms from a histogram template
 N_bin = 100
-hist_counter = r.TH1F('hist_template','Photon counter',N_bin,0,5)
-hist_ETA = r.TH1F('hist_template','Photon ETA',N_bin,0.0,5.0)
-hist_PT = r.TH1F('hist_template','Photon PT',N_bin,0.0,100.0)
+hist_counter = r.TH1F('hist_template','TEST counter',N_bin,0,5)
+hist_ETA = r.TH1F('hist_template','TEST ETA',N_bin,0.0,5.0)
+hist_PT = r.TH1F('hist_template','TEST PT',N_bin,0.0,100.0)
+
 #photon number is 22
 for i, entry in enumerate(tree):
     counter = 0
@@ -51,24 +52,42 @@ for i, entry in enumerate(tree):
     PT9 = entry.mu_MC_RELATION9_PT
     array_PT = [PT1, PT2, PT3, PT4, PT5, PT6, PT7, PT8, PT9]
 
+    PHI1 = entry.mu_MC_RELATION1_PHI
+    PHI2 = entry.mu_MC_RELATION2_PHI
+    PHI3 = entry.mu_MC_RELATION3_PHI
+    PHI4 = entry.mu_MC_RELATION4_PHI
+    PHI5 = entry.mu_MC_RELATION5_PHI
+    PHI6 = entry.mu_MC_RELATION6_PHI
+    PHI7 = entry.mu_MC_RELATION7_PHI
+    PHI8 = entry.mu_MC_RELATION8_PHI
+    PHI9 = entry.mu_MC_RELATION9_PHI
+    array_PHI = [PHI1, PHI2, PHI3, PHI4, PHI5, PHI6, PHI7, PHI8, PHI9]
+
     for j in range(len(array_ID)):
         if array_ID[j] == 22 and array_ETA[j] != 0:
             hist_ETA.Fill(array_ETA[j])
             hist_PT.Fill(array_PT[j])
             counter += 1
-    # if i > 10000: break
+    if i > 100: break
 
     hist_counter.Fill(counter)
-#Prints number of events with x photons
-c = r.TCanvas('Photon ETA')
-hist_ETA.Draw()
-c.Print('photon_ETA.png')
 
-c2 = r.TCanvas('Photon counter')
-hist_counter.GetXaxis().SetMaxDigits(0)
-hist_counter.Draw()
-c2.Print('photon_counter.png')
 
-c3 = r.TCanvas('Photon PT')
+# c = r.TCanvas('TEST ETA')
+# c.SetLogy()
+# hist_ETA.Scale(1./hist.Integral())
+# hist_ETA.Draw()
+# c.Print('TEST_ETA.png')
+
+# c2 = r.TCanvas('TEST counter')
+# c2.SetLogy()
+# hist_counter.Scale(1./hist.Integral())
+# hist_counter.GetXaxis().SetMaxDigits(0)
+# hist_counter.Draw()
+# c2.Print('TEST_counter.png')
+
+c3 = r.TCanvas('TEST PT')
+c3.SetLogy()
+hist_PT.Scale(1./hist.Integral())
 hist_PT.Draw()
-c3.Print('photon_PT.png')
+c3.Print('TEST_PT.png')
