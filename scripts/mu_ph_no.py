@@ -13,6 +13,7 @@ N_bin = 100
 hist0 = r.TH1F('hist0','No Photons',N_bin,0.0,100.0)
 hist1 = r.TH1F('hist1','One Photon',N_bin,0.0,100.0)
 hist2 = r.TH1F('hist2','Two or More Photons',N_bin,0.0,100.0)
+histph = r.TH1F('histph','Photons PT',N_bin,0.0,100.0) #only when there's just one photon
 
 #photon number is 22
 for i, entry in enumerate(tree):
@@ -44,6 +45,8 @@ for i, entry in enumerate(tree):
             if counter == 0: hist0.Fill(array_PT[j])
             elif counter == 1: hist1.Fill(array_PT[j])
             elif counter > 1: hist2.Fill(array_PT[j])
+        if array_ID[j] == 22 and counter == 1:
+            histph.Fill(array_PT[j])
     # if i > 10000: break
 
 hist0.Scale(1./hist0.Integral())
@@ -61,3 +64,8 @@ hist2.Draw('HIST SAME')
 c.BuildLegend()
 hist0.SetTitle('PT dependent on photon number')
 c.Print('images/photon_counter/mu_ph_PT.png')
+
+c2 = r.TCanvas('Photon PT')
+c2.SetLogy()
+histph.Draw('HIST')
+c2.Print('images/photon_counter/ph_PT.png')

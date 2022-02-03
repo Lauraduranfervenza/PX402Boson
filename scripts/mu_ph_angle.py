@@ -68,7 +68,7 @@ hist1.Scale(1./hist1.Integral())
 # hist2.Scale(1./hist2.Integral())
 
 c = r.TCanvas('PT dependent on photon number')
-c.SetLogy()
+# c.SetLogy()
 hist1.SetLineColor(1)
 # hist2.SetLineColor(2)
 hist1.Draw('HIST')
