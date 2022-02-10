@@ -19,6 +19,7 @@ mum1 = 0
 mup1 = 0
 mum2 = 0
 mup2 = 0
+phmore = 0
 
 #photon number is 22
 for i, entry in enumerate(tree):
@@ -47,7 +48,7 @@ for i, entry in enumerate(tree):
     if photons == 2:
         mum2 = mum2 + mum_count
         mup2 = mup2 + mup_count
-
-    # if i > 10000: break
-event_counter = [mum0, mum1, mum2, mup0, mup1, mup2]
-print(event_counter)
+    if photons > 2: phmore = phmore + 1
+    if i > 100000: break
+# event_counter = [mum0, mum1, mum2, mup0, mup1, mup2]
+print(phmore)

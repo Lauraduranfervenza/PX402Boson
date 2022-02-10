@@ -59,7 +59,7 @@ for i, entry in enumerate(tree):
                 ETA_mu = array_ETA[j]
         dPHI = abs(PHI_ph - PHI_mu)
         dETA = ETA_ph - ETA_mu
-        dR = dETA*dETA + dPHI*dPHI
+        dR = sqrt(dETA*dETA + dPHI*dPHI)
         hist1.Fill(dR)
                 
     # if i > 10000: break
