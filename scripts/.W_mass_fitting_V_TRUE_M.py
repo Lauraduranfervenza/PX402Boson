@@ -61,7 +61,6 @@ data_hist.Draw('same e1')
 c.BuildLegend() #legend needs to be corrected
 c.Print('Wmassfit.png')
 
-
 with open('empty.txt', 'w') as datafile:
     for j in range(len(data)):
         datafile.write("%s\n" % data[j])
